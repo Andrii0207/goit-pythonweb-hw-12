@@ -1,3 +1,14 @@
+"""
+Email Service Module
+=====================
+
+This module provides functionality for sending emails, specifically for email verification.
+
+Functions
+---------
+- send_email: Sends a verification email to the specified user.
+"""
+
 from pathlib import Path
 
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
@@ -22,6 +33,14 @@ conf = ConnectionConfig(
 )
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    Sends a verification email to the given user.
+
+    :param email: The recipient's email address.
+    :param username: The recipient's username.
+    :param host: The application host URL.
+    :raises ConnectionErrors: If there is an error in sending the email.
+    """
     try:
         token_verification = create_email_token({"sub": email})
         message = MessageSchema(

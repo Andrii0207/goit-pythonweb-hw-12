@@ -1,8 +1,33 @@
+"""
+Upload File Service
+====================
+
+This module provides functionality for uploading files to Cloudinary.
+
+Classes
+-------
+- UploadFileService: Handles file uploads to Cloudinary.
+
+Methods
+-------
+- upload_file: Uploads a file to Cloudinary and returns its URL.
+"""
+
 import cloudinary
 import cloudinary.uploader
 
 class UploadFileService:
+    """
+    A service for uploading files to Cloudinary.
+    """
     def __init__(self, cloud_name, api_key, api_secret):
+        """
+        Initialize the UploadFileService with Cloudinary credentials.
+
+        :param cloud_name: Cloudinary cloud name.
+        :param api_key: Cloudinary API key.
+        :param api_secret: Cloudinary API secret.
+        """
         self.cloud_name = cloud_name
         self.api_key = api_key
         self.api_secret = api_secret
@@ -15,6 +40,13 @@ class UploadFileService:
 
     @staticmethod
     def upload_file(file, username) -> str:
+        """
+        Upload a file to Cloudinary.
+
+        :param file: The file object to be uploaded.
+        :param username: The username associated with the file.
+        :return: The URL of the uploaded file.
+        """
         public_id = f"RestApp/{username}"
         r = cloudinary.uploader.upload(file.file, public_id=public_id, overwrite=True)
         src_url = cloudinary.CloudinaryImage(public_id).build_url(

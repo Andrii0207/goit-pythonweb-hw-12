@@ -1,3 +1,33 @@
+"""
+Configuration Settings
+======================
+
+This module defines the configuration settings for the application, including database, authentication,
+and email service configurations.
+
+Configuration Variables:
+    - `DB_URL` (str): Database connection URL.
+    - `JWT_SECRET` (str): Secret key for JWT authentication.
+    - `JWT_ALGORITHM` (str): Algorithm used for JWT tokens (default: "HS256").
+    - `JWT_EXPIRATION_SECONDS` (int): Expiration time for JWT tokens in seconds (default: 3600).
+    - `MAIL_USERNAME` (str): Email service username.
+    - `MAIL_PASSWORD` (str): Email service password.
+    - `MAIL_FROM` (str): Sender email address.
+    - `MAIL_PORT` (int): Email server port (default: 465).
+    - `MAIL_SERVER` (str): SMTP server address (default: "smtp.meta.ua").
+    - `MAIL_FROM_NAME` (str): Sender name.
+    - `MAIL_STARTTLS` (bool): Whether to use STARTTLS (default: False).
+    - `MAIL_SSL_TLS` (bool): Whether to use SSL/TLS (default: True).
+    - `USE_CREDENTIALS` (bool): Whether to use authentication credentials (default: True).
+    - `VALIDATE_CERTS` (bool): Whether to validate email certificates (default: True).
+    - `CLD_NAME` (str): Cloudinary cloud name (default: "cloudinary").
+    - `CLD_API_KEY` (int): Cloudinary API key.
+    - `CLD_API_SECRET` (str): Cloudinary API secret.
+
+Environment Configuration:
+    - The settings are loaded from a `.env` file.
+    - The configuration is case-sensitive.
+"""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

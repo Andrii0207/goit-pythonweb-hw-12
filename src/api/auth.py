@@ -1,3 +1,16 @@
+"""
+Authentication API
+==================
+
+This module provides authentication-related endpoints for user registration, login, email confirmation, and email verification requests.
+
+Endpoints:
+    - `/auth/register`: Register a new user.
+    - `/auth/login`: Authenticate a user and return an access token.
+    - `/auth/confirmed_email/{token}`: Confirm a user's email using a token.
+    - `/auth/request_email`: Request an email verification link.
+
+"""
 
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
@@ -13,6 +26,20 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # Реєстрація користувача
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserCreate, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
+    """
+        Register a new user.
+
+        :param user_data: User registration data.
+        :type user_data: UserCreate
+        :param background_tasks: Background task handler.
+        :type background_tasks: BackgroundTasks
+        :param request: FastAPI request instance.
+        :type request: Request
+        :param db: Database session dependency.
+        :type db: Session
+        :return: Newly registered user data.
+        :rtype: User
+        """
     user_service = UserService(db)
 
     email_user = await user_service.get_user_by_email(user_data.email)
@@ -41,6 +68,16 @@ async def register_user(user_data: UserCreate, background_tasks: BackgroundTasks
 async def login_user(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
+    """
+        Authenticate a user and return an access token.
+
+        :param form_data: OAuth2 form data containing username and password.
+        :type form_data: OAuth2PasswordRequestForm
+        :param db: Database session dependency.
+        :type db: Session
+        :return: Access token and token type.
+        :rtype: Token
+        """
     user_service = UserService(db)
     user = await user_service.get_user_by_username(form_data.username)
     if not user or not Hash().verify_password(form_data.password, user.hashed_password):
@@ -61,6 +98,16 @@ async def login_user(
 
 @router.get("/confirmed_email/{token}")
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+        Confirm a user's email using a verification token.
+
+        :param token: Verification token received via email.
+        :type token: str
+        :param db: Database session dependency.
+        :type db: Session
+        :return: Confirmation message.
+        :rtype: dict
+        """
     email = await get_email_from_token(token)
     user_service = UserService(db)
     user = await user_service.get_user_by_email(email)
@@ -81,6 +128,20 @@ async def request_email(
     request: Request,
     db: Session = Depends(get_db),
 ):
+    """
+        Request an email verification link.
+
+        :param body: Email request data.
+        :type body: RequestEmail
+        :param background_tasks: Background task handler.
+        :type background_tasks: BackgroundTasks
+        :param request: FastAPI request instance.
+        :type request: Request
+        :param db: Database session dependency.
+        :type db: Session
+        :return: Verification email sent message.
+        :rtype: dict
+    """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(body.email)
 
