@@ -1,6 +1,6 @@
 """
 Database Models
-===============
+==================
 
 This module defines the SQLAlchemy ORM models for the application.
 
@@ -12,16 +12,14 @@ Classes:
 """
 
 from sqlalchemy import Column, Integer, String, Boolean, func, Table
-from sqlalchemy.orm import relationship, DeclarativeBase
+from sqlalchemy.orm import relationship, DeclarativeBase, declarative_base
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import DateTime, Date
 
 
-class Base(DeclarativeBase):
-    """
-       Base class for all SQLAlchemy models.
-    """
-    pass
+# class Base(DeclarativeBase):
+#     pass
+Base = declarative_base()
 
 
 class Contact(Base):

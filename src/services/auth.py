@@ -1,6 +1,6 @@
 """
 Authentication and Token Management Module
-=========================================
+=============================================
 
 This module provides authentication utilities, including password hashing,
 JWT token generation and validation, and retrieving the current user.

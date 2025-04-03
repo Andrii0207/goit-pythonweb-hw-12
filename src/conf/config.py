@@ -32,18 +32,18 @@ Environment Configuration:
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    DB_URL: str
-    JWT_SECRET: str
+    DB_URL: str = "postgresql+asyncpg://user:pass@localhost:5432/db_name"
+    JWT_SECRET: str = "secret_key"
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_SECONDS: int = 3600
-    MAIL_USERNAME: str = "example@meta.ua",
-    MAIL_PASSWORD: str = "secretPassword",
-    MAIL_FROM: str = "example@meta.ua",
-    MAIL_PORT: int = 465,
-    MAIL_SERVER: str = "smtp.meta.ua",
-    MAIL_FROM_NAME: str = "Example email",
-    MAIL_STARTTLS: bool = False,
-    MAIL_SSL_TLS: bool = True,
+    MAIL_USERNAME: str = "example@meta.ua"
+    MAIL_PASSWORD: str = "secretPassword"
+    MAIL_FROM: str = "example@meta.ua"
+    MAIL_PORT: int = 465
+    MAIL_SERVER: str = "smtp.meta.ua"
+    MAIL_FROM_NAME: str = "Example email"
+    MAIL_STARTTLS: bool = False
+    MAIL_SSL_TLS: bool = True
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
 
