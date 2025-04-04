@@ -17,8 +17,8 @@ Schemas
 """
 
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field, EmailStr, condecimal, constr, ConfigDict
+from typing import Optional
+from pydantic import BaseModel, Field, EmailStr, ConfigDict
 
 from src.database.models import UserRole
 
@@ -43,6 +43,7 @@ class ContactCreate(ContactBase):
     """
     pass
 
+
 class ContactUpdate(BaseModel):
     """
     Schema for updating an existing contact.
@@ -54,8 +55,10 @@ class ContactUpdate(BaseModel):
     birth_date: Optional[datetime] = None
     additional_data: Optional[str] = None
 
+
     class Config:
         orm_mode = True
+
 
 class ContactResponse(ContactBase):
     """
@@ -66,7 +69,7 @@ class ContactResponse(ContactBase):
     class Config:
         orm_mode = True
 
-# Схема користувача
+
 class User(BaseModel):
     """
     Schema for user information.
@@ -79,7 +82,7 @@ class User(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-# Схема для запиту реєстрації
+
 class UserCreate(BaseModel):
     """
     Schema for user registration.
@@ -89,7 +92,7 @@ class UserCreate(BaseModel):
     password: str
     role: UserRole
 
-# Схема для токену
+
 class Token(BaseModel):
     """
     Schema for authentication token.
@@ -97,6 +100,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     refresh_token: str
+
 
 class RequestEmail(BaseModel):
     """

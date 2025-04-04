@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, patch
 from fastapi import status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 @pytest.mark.asyncio
 async def test_healthchecker_success(client):
     response = client.get("api/healthchecker")

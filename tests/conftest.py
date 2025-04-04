@@ -3,7 +3,7 @@ import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.pool import StaticPool
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from main import app
 from src.database.models import Base, User
@@ -55,6 +55,7 @@ def init_models_wrap():
 
     asyncio.run(init_models())
 
+
 @pytest.fixture(scope="module")
 def client():
     # Dependency override
@@ -70,6 +71,7 @@ def client():
     app.dependency_overrides[get_db] = override_get_db
 
     yield TestClient(app)
+
 
 @pytest_asyncio.fixture()
 async def get_token():

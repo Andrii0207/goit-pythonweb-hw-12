@@ -11,6 +11,7 @@ from unittest.mock import patch, MagicMock, AsyncMock, Mock
 
 user_data = {"username": "agent007", "email": "agent007@gmail.com", "password": "12345678", "role": "admin"}
 
+
 def test_signup(client, monkeypatch):
     mock_send_email = Mock()
     monkeypatch.setattr("src.api.auth.send_email", mock_send_email)
@@ -22,6 +23,7 @@ def test_signup(client, monkeypatch):
     assert "hashed_password" not in data
     assert "avatar" in data
 
+
 def test_repeat_signup(client, monkeypatch):
     mock_send_email = Mock()
     monkeypatch.setattr("src.api.auth.send_email", mock_send_email)
@@ -30,12 +32,14 @@ def test_repeat_signup(client, monkeypatch):
     data = response.json()
     assert data["detail"] == "Користувач з таким email вже існує"
 
+
 def test_not_confirmed_login(client):
     response = client.post("api/auth/login",
                            data={"username": user_data.get("username"), "password": user_data.get("password")})
     assert response.status_code == 401, response.text
     data = response.json()
     assert data["detail"] == "Електронна адреса не підтверджена"
+
 
 @pytest.mark.asyncio
 async def test_login(client):
@@ -53,6 +57,7 @@ async def test_login(client):
     assert "access_token" in data
     assert "token_type" in data
 
+
 def test_wrong_password_login(client):
     response = client.post("api/auth/login",
                            data={"username": user_data.get("username"), "password": "password"})
@@ -60,20 +65,18 @@ def test_wrong_password_login(client):
     data = response.json()
     assert data["detail"] == "Неправильний логін або пароль"
 
+
 def test_wrong_username_login(client):
-    response = client.post("api/auth/login",
-                           data={"username": "username", "password": user_data.get("password")})
+    response = client.post("api/auth/login", data={"username": "username", "password": user_data.get("password")})
     assert response.status_code == 401, response.text
     data = response.json()
     assert data["detail"] == "Неправильний логін або пароль"
 
 def test_validation_error_login(client):
-    response = client.post("api/auth/login",
-                           data={"password": user_data.get("password")})
+    response = client.post("api/auth/login", data={"password": user_data.get("password")})
     assert response.status_code == 422, response.text
     data = response.json()
     assert "detail" in data
-
 
 
 @pytest.mark.asyncio

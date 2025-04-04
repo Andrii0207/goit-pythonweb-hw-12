@@ -5,6 +5,7 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from src.database.models import User, UserRole
 
+
 user_data = {
     "username": "testuser",
     "email": "testuser@example.com",

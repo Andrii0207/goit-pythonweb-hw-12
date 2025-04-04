@@ -25,7 +25,6 @@ from fastapi import APIRouter, HTTPException, Depends, status, Security, Backgro
 router = APIRouter(prefix="/auth", tags=["auth"])
 refresh_token_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/refresh")
 
-# Реєстрація користувача
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 async def register_user(user_data: UserCreate, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
     """
@@ -65,7 +64,6 @@ async def register_user(user_data: UserCreate, background_tasks: BackgroundTasks
 
     return new_user
 
-# Логін користувача
 @router.post("/login", response_model=Token)
 async def login_user(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)

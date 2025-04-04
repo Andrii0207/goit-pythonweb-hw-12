@@ -48,9 +48,11 @@ class Contact(Base):
     user_id = Column("user_id", ForeignKey("users.id", ondelete="CASCADE"), default=None)
     user = relationship("User", backref="notes")
 
+
 class UserRole(str, Enum):
     USER = "user"
     ADMIN = "admin"
+
 
 class User(Base):
     """

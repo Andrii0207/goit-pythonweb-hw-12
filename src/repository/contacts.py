@@ -35,11 +35,6 @@ class ContactRepository:
         """
         self.db = session
 
-    # async def get_contacts(self, skip: int, limit: int, query: Optional[str]=None) -> List[Contact]:
-    #     stmt = select(Contact).offset(skip).limit(limit)
-    #     contacts = await self.db.execute(stmt)
-    #     return contacts.scalars().all()
-
     async def get_contacts(self, skip: int, limit: int, user: User, query: Optional[str] = None) -> List[Contact]:
         """
         Retrieves a list of contacts for a user with optional search query.

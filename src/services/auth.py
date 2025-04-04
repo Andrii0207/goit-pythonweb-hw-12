@@ -59,7 +59,6 @@ class Hash:
         return self.pwd_context.hash(password)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
-# define a function to generate a new access token
 async def create_access_token(data: dict, expires_delta: Optional[int] = None):
     """
     Generate a new JWT access token.
@@ -78,6 +77,7 @@ async def create_access_token(data: dict, expires_delta: Optional[int] = None):
         to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
     )
     return encoded_jwt
+
 
 async def create_refresh_token(data: dict, expires_delta: Optional[int] = None):
     """
@@ -134,6 +134,7 @@ async def verify_refresh_token(refresh_token: str, db: Session = Depends(get_db)
     except JWTError as err:
         return None
 
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
@@ -152,7 +153,6 @@ async def get_current_user(
     )
 
     try:
-        # Decode JWT
         payload = jwt.decode(
             token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
         )
@@ -167,6 +167,7 @@ async def get_current_user(
         raise credentials_exception
     return user
 
+
 def create_email_token(data: dict):
     """
     Generate a JWT token for email verification.
@@ -179,6 +180,7 @@ def create_email_token(data: dict):
     to_encode.update({"iat": datetime.now(UTC), "exp": expire})
     token = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     return token
+
 
 async def get_email_from_token(token: str):
     """
@@ -199,6 +201,7 @@ async def get_email_from_token(token: str):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Неправильний токен для перевірки електронної пошти",
         )
+
 
 def get_current_admin_user(current_user: User = Depends(get_current_user)):
     if current_user.role not in [UserRole.ADMIN]:

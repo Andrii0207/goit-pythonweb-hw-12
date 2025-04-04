@@ -29,7 +29,6 @@ async def healthchecker(db: AsyncSession = Depends(get_db)):
        :raises HTTPException: If the database is not configured correctly or there is an error connecting.
     """
     try:
-        # Виконуємо асинхронний запитs
         result = await db.execute(text("SELECT 1"))
         result = result.scalar_one_or_none()
 
