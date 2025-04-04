@@ -13,15 +13,17 @@ Endpoints:
 """
 
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from src.schemas import UserCreate, Token, User, RequestEmail
-from src.services.auth import create_access_token, Hash, get_email_from_token
+from src.services.auth import create_access_token, Hash, get_email_from_token, create_refresh_token, \
+    verify_refresh_token
 from src.services.email import send_email
 from src.services.users import UserService
 from src.database.db import get_db
 from fastapi import APIRouter, HTTPException, Depends, status, Security, BackgroundTasks, Request
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+refresh_token_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/refresh")
 
 # Реєстрація користувача
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
@@ -93,7 +95,9 @@ async def login_user(
         )
 
     access_token = await create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = await create_refresh_token(data={"sub": user.username})
+    await user_service.set_refresh_token(user.id, refresh_token)
+    return {"access_token": access_token, "token_type": "bearer",  "refresh_token": refresh_token}
 
 
 @router.get("/confirmed_email/{token}")
@@ -152,3 +156,33 @@ async def request_email(
             send_email, user.email, user.username, request.base_url
         )
     return {"message": "Перевірте свою електронну пошту для підтвердження"}
+
+
+@router.post("/token-refresh", response_model=Token)
+async def refresh(refresh_token: str = Depends(refresh_token_scheme), db: Session = Depends(get_db)):
+    """
+        Refreshes the access token using a valid refresh token.
+        Args:
+            refresh_token (str): The refresh token.
+            db (Session): The database session.
+
+        Raises:
+            HTTPException: If the refresh token is invalid or expired.
+
+        Returns:
+            dict: A new access token and refresh token.
+    """
+    user = await verify_refresh_token(refresh_token, db)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалідний або прострочений refresh token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = await create_access_token(data={"sub": user.username})
+    new_refresh_token = await create_refresh_token(data={"sub": user.username})
+    user_service = UserService(db)
+    await user_service.set_refresh_token(user.id, refresh_token)
+
+    return {"access_token": access_token, "refresh_token": new_refresh_token, "token_type": "bearer"}

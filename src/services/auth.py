@@ -28,6 +28,7 @@ from jose import JWTError, jwt
 
 from src.database.db import get_db
 from src.conf.config import settings
+from src.database.models import User, UserRole
 from src.services.users import UserService
 
 UTC = timezone.utc
@@ -77,6 +78,61 @@ async def create_access_token(data: dict, expires_delta: Optional[int] = None):
         to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
     )
     return encoded_jwt
+
+async def create_refresh_token(data: dict, expires_delta: Optional[int] = None):
+    """
+       Creates a new refresh token (JWT) for the user.
+
+       Args:
+           data (dict): The data (user information) to encode in the token.
+           expires_delta (Optional[int], optional): The expiration time in seconds. Defaults to None.
+
+       Returns:
+           str: The generated JWT refresh token.
+    """
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(UTC) + timedelta(seconds=expires_delta)
+    else:
+        expire = datetime.now(UTC) + timedelta(days=10)
+    to_encode.update({"exp": expire, "token_type": "refresh"})
+
+    encoded_jwt = jwt.encode(
+        to_encode, settings.JWT_REFRESH_SECRET, algorithm=settings.JWT_ALGORITHM
+    )
+    return encoded_jwt
+
+
+async def verify_refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+    """
+        Validates the given refresh token and returns the user if valid.
+
+        Args:
+            refresh_token (str): The refresh token.
+            db (Session): The database session.
+
+        Returns:
+            User: The user associated with the refresh token or None if invalid.
+    """
+    try:
+        payload = jwt.decode(
+            refresh_token, settings.JWT_REFRESH_SECRET, algorithms=[settings.JWT_ALGORITHM]
+        )
+        username: str = payload.get("sub")
+        token_type: str = payload.get("token_type")
+
+        if username is None or token_type != "refresh":
+            return None
+
+        user_service = UserService(db)
+        user = await user_service.get_user_by_username(username)
+
+        if refresh_token != user.refresh_token:
+            return None
+
+        return user
+    except JWTError as err:
+        return None
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
@@ -143,3 +199,8 @@ async def get_email_from_token(token: str):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Неправильний токен для перевірки електронної пошти",
         )
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role not in [UserRole.ADMIN]:
+        raise HTTPException(status_code=403, detail="Недостатньо прав доступу")
+    return current_user

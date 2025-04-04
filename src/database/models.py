@@ -10,12 +10,11 @@ Classes:
     - `User`: Represents a user in the system.
 
 """
-
+from enum import Enum
 from sqlalchemy import Column, Integer, String, Boolean, func, Table
 from sqlalchemy.orm import relationship, DeclarativeBase, declarative_base
 from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import DateTime, Date
-
+from sqlalchemy.sql.sqltypes import DateTime, Date, Enum as SqlEnum
 
 # class Base(DeclarativeBase):
 #     pass
@@ -49,6 +48,9 @@ class Contact(Base):
     user_id = Column("user_id", ForeignKey("users.id", ondelete="CASCADE"), default=None)
     user = relationship("User", backref="notes")
 
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
 
 class User(Base):
     """
@@ -71,3 +73,5 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
     avatar = Column(String(255), nullable=True)
     confirmed = Column(Boolean, default=False)
+    role = Column(SqlEnum(UserRole), default=UserRole.USER, nullable=False)
+    refresh_token = Column(String(255), nullable=True)

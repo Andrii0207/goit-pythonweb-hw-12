@@ -97,3 +97,6 @@ class UserService:
         :return: The updated user object.
         """
         return await self.repository.update_avatar_url(email, url)
+
+    async def set_refresh_token(self, user_id: int, refresh_token: str) -> None:
+        await self.repository.set_refresh_token(user_id, refresh_token)

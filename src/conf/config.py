@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = True
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
+    JWT_REFRESH_SECRET: str="secret_refresh_code"
 
     CLD_NAME: str = "cloudinary"
     CLD_API_KEY: int = 326488457974591

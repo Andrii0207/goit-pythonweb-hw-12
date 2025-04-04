@@ -9,7 +9,7 @@ from jose import jwt
 from unittest.mock import patch, MagicMock, AsyncMock, Mock
 
 
-user_data = {"username": "agent007", "email": "agent007@gmail.com", "password": "12345678"}
+user_data = {"username": "agent007", "email": "agent007@gmail.com", "password": "12345678", "role": "admin"}
 
 def test_signup(client, monkeypatch):
     mock_send_email = Mock()
